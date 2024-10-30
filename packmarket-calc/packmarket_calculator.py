@@ -28,7 +28,65 @@ class Box(NamedTuple):
     PriceTotal: float
     """Общая цена"""
 
-def calculate_packmarket(
+def calculate(
+        length: int,
+        width: int,
+        height: int,
+        quantity: int,
+        box_type: BoxType = 427,
+        cardboard_type: CardboardType = "T-24",
+        color: ColorType = "бурый"
+) -> Box:
+    _check_input_parameters(
+        length=length,
+        width=width,
+        height=height,
+        quantity=quantity, 
+        box_type=box_type,
+        cardboard_type=cardboard_type,
+        color=color
+    )
+    box = _calculate_packmarket(
+        length=length,
+        width=width,
+        height=height,
+        quantity=quantity, 
+        box_type=box_type,
+        cardboard_type=cardboard_type,
+        color=color)
+    return box
+
+def _check_input_parameters(
+        length: int,
+        width: int,
+        height: int,
+        quantity: int,
+        box_type: BoxType = 427,
+        cardboard_type: CardboardType = "T-24",
+        color: ColorType = "бурый"
+) -> None:
+    def _check_dimmensions() -> None:
+        if width < 60: raise ValueError('Width must be more than 60mm')
+        if length < 60: raise ValueError('Length must be more than 60mm')
+        if height < 30: raise ValueError('Height must be more than 30mm')
+        if length < width: raise ValueError('Length must be more than width')
+    def _check_box_specific_dimmensions() -> None:
+        if box_type == 201:
+            if length + width > 3140: raise ValueError('This size is not available')
+            if height + width > 1390: raise ValueError('This size is not available')
+        if box_type == 427:
+            if 2 * width + 3 * height > 1960: raise ValueError('This size is not available')
+            if length + 4 * height > 1310: raise ValueError('This size is not available')
+    
+    if quantity < 100: raise ValueError('Quantity must be more than 100')
+    if (box_type != 427) & (box_type != 201): raise ValueError('Box type must be 427 or 201')
+    if (color != 'бурый') & (color != 'белый'): raise ValueError('Color must be "бурый" or "белый"')
+    if (cardboard_type != 'T-24'): raise ValueError('Cardboard type must be "T-24"')
+    _check_dimmensions()
+    _check_box_specific_dimmensions()
+
+
+def _calculate_packmarket(
         length: int,
         width: int,
         height: int,
@@ -73,7 +131,7 @@ def _get_cardboard_price(cardboard_type: CardboardType, color: ColorType) -> flo
     }
     return prices[color][cardboard_type]
 
-def _calculate_area(length: int, width: int, height: int, type: BoxType) -> int:
+def _calculate_area(length: int, width: int, height: int, box_type: BoxType) -> int:
     #Пока что будет под 0427 и 0201 короб. Дальше можно добавить по запросу
     """0427:
     Требования: 
@@ -92,6 +150,11 @@ def _calculate_area(length: int, width: int, height: int, type: BoxType) -> int:
     Формула площади:
         ((width + height + 8)*((length + width) * 2 + 60))
     """
+    if box_type == 427:
+        return ((length + 4 * height + 70)*(2 * width + 3 * height + 40))
+    
+    if box_type == 201:
+        return ((width + height + 8)*((length + width) * 2 + 60))
     return 43500
 
 def _get_base_price(box_area: int, cardboard_price: float) -> float:
@@ -120,5 +183,11 @@ def _calculate_single_price(base_price: float, quantity: int) -> float:
     return price_sigle
 
 if __name__ == '__main__':
-    box = calculate_packmarket(200, 100, 50, 250)
+    box = calculate(
+        length=300, 
+        width=300, 
+        height=1060, 
+        quantity=100, 
+        box_type=201
+    )
     print(f'Коробка {box.Type}, {box.Length}x{box.Width}x{box.Height}, {box.Color}, {box.Quantity} шт - {box.PriceSingle} руб. / {box.PriceTotal} руб.')
