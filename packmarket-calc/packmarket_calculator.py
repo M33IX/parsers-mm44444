@@ -37,6 +37,16 @@ def calculate(
         cardboard_type: CardboardType = "T-24",
         color: ColorType = "бурый"
 ) -> Box:
+    """Производит рассчет стоимости по заданным параметрам\n:
+       Параметры\n:
+        length: int - длина в миллиметрах
+        width: int - ширина в миллиметрах
+        height: int - высота в миллиметрах
+        quantity: int - количество штук (минимум 100)
+        box_type: Literal[427] | Literal[201] - форма коробки (427 или 201)
+        cardboard_type: Literal["T-23", "T-24"] - тип картона ("T-23" или "T-24" на английском)
+        color: Literal["бурый"] | Literal["белый"] - цвет
+    """
     _check_input_parameters(
         length=length,
         width=width,
@@ -133,23 +143,6 @@ def _get_cardboard_price(cardboard_type: CardboardType, color: ColorType) -> flo
 
 def _calculate_area(length: int, width: int, height: int, box_type: BoxType) -> int:
     #Пока что будет под 0427 и 0201 короб. Дальше можно добавить по запросу
-    """0427:
-    Требования: 
-    2 * width + 3 * height <= 1960 (mm)
-    length + 4 * height <= 1310 (mm)
-
-    Формула площади:
-    ((length + 4 * height + 70)*(2 * width + 3 * height + 40))
-    """
-
-    """0201:
-    Требования:
-        length + width <= 3140 (mm)
-        height + width <= 1390 (mm)
-
-    Формула площади:
-        ((width + height + 8)*((length + width) * 2 + 60))
-    """
     if box_type == 427:
         return ((length + 4 * height + 70)*(2 * width + 3 * height + 40))
     
