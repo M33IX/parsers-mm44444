@@ -27,7 +27,7 @@ class Box(NamedTuple):
     """Цена за шт"""
     PriceTotal: float
     """Общая цена"""
-
+    
 def calculate(
         length: int,
         width: int,
@@ -196,5 +196,10 @@ if __name__ == '__main__':
     если не задана форма, цвет и тип картона, то возьмутся дефолтные
     427, T-24, бурый
     """
-    box=calculate(length=300, width=300, height=200, quantity=100)
+    box=calculate(
+        length=300, 
+        width=300, 
+        height=200, 
+        quantity=100
+    )
     print(box)
