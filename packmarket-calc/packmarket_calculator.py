@@ -4,7 +4,7 @@ from math import ceil
 
 type BoxType = Literal[427] | Literal[201]
 type ColorType = Literal["бурый"] | Literal["белый"]
-type CardboardType = Literal["T-22", "T-23", "T-24", "T-25", "P-31"]
+type CardboardType = Literal["T-23", "T-24"]
 
 type CardboardPriceMatrix = Dict[ColorType, Dict[CardboardType, float]]
 
@@ -38,7 +38,7 @@ def calculate(
         color: ColorType = "бурый"
 ) -> Box:
     """Производит рассчет стоимости по заданным параметрам\n:
-       Параметры\n:
+       @params:
         length: int - длина в миллиметрах
         width: int - ширина в миллиметрах
         height: int - высота в миллиметрах
@@ -46,6 +46,17 @@ def calculate(
         box_type: Literal[427] | Literal[201] - форма коробки (427 или 201)
         cardboard_type: Literal["T-23", "T-24"] - тип картона ("T-23" или "T-24" на английском)
         color: Literal["бурый"] | Literal["белый"] - цвет
+        @returns:
+        Box(
+            Length: int - длина
+            Width: int - ширина
+            Height: int - высота
+            Type: Literal[427,201] - тип формы (427 или 201)
+            Color: Literal['бурый', 'белый'] - цвет ('бурый' или 'белый')
+            Quantity: int - количество
+            PriceSingle: float - цена за штуку
+            PriceTotal: float - итоговый ценник
+        )
     """
     _check_input_parameters(
         length=length,
@@ -125,18 +136,12 @@ def _calculate_packmarket(
 def _get_cardboard_price(cardboard_type: CardboardType, color: ColorType) -> float:
     prices: CardboardPriceMatrix = {
         'бурый': {
-            'T-22': 35.24,
             'T-23': 40.0,
-            'T-24': 45.0,
-            'T-25': 50.4,
-            'P-31': 80.69
+            'T-24': 45.0
         },
         'белый': {
-            'T-22': 45.07,
             'T-23': 50.0,
-            'T-24': 50.0,
-            'T-25': 60.59,
-            'P-31': 110.07
+            'T-24': 50.0
         }
     }
     return prices[color][cardboard_type]
@@ -176,11 +181,20 @@ def _calculate_single_price(base_price: float, quantity: int) -> float:
     return price_sigle
 
 if __name__ == '__main__':
+    #Рассчет по всем параметрам
     box = calculate(
         length=300, 
         width=300, 
         height=1060, 
         quantity=100, 
-        box_type=201
+        box_type=201,
+        cardboard_type="T-24",
+        color="бурый"
     )
     print(f'Коробка {box.Type}, {box.Length}x{box.Width}x{box.Height}, {box.Color}, {box.Quantity} шт - {box.PriceSingle} руб. / {box.PriceTotal} руб.')
+    """
+    если не задана форма, цвет и тип картона, то возьмутся дефолтные
+    427, T-24, бурый
+    """
+    box=calculate(length=300, width=300, height=200, quantity=100)
+    print(box)
