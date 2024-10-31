@@ -23,11 +23,11 @@ class Box(NamedTuple):
     '''Тип материала: "T-23" или "T-24"'''
     Quantity: int
     """Количество коробок"""
-    PriceSingle: float
+    PriceUnit: float
     """Цена за шт"""
     PriceTotal: float
     """Общая цена"""
-    
+
 def calculate(
         length: int,
         width: int,
@@ -54,7 +54,7 @@ def calculate(
             Type: Literal[427,201] - тип формы (427 или 201)
             Color: Literal['бурый', 'белый'] - цвет ('бурый' или 'белый')
             Quantity: int - количество
-            PriceSingle: float - цена за штуку
+            PriceUnit: float - цена за штуку
             PriceTotal: float - итоговый ценник
         )
     """
@@ -119,8 +119,8 @@ def _calculate_packmarket(
     cardboard_price =_get_cardboard_price(cardboard_type, color)
     box_area = _calculate_area(length, width, height, box_type)
     base_price = _get_base_price(box_area, cardboard_price)
-    price_single = _calculate_single_price(base_price, quantity)
-    price_total = price_single * quantity
+    price_unit = _calculate_unit_price(base_price, quantity)
+    price_total = price_unit * quantity
     return Box(
         Length=length, 
         Width=width, 
@@ -129,7 +129,7 @@ def _calculate_packmarket(
         Color = color,
         Cardboard=cardboard_type,
         Quantity=quantity, 
-        PriceSingle=price_single, 
+        PriceUnit=price_unit, 
         PriceTotal=price_total
         )
 
@@ -175,7 +175,7 @@ def _calculate_quantity_markup(quantity: int) -> float:
 
     return 0.0
 
-def _calculate_single_price(base_price: float, quantity: int) -> float:
+def _calculate_unit_price(base_price: float, quantity: int) -> float:
     price_raw = base_price + _calculate_quantity_markup(quantity)
     price_sigle = ceil(price_raw * 100) / 100
     return price_sigle
@@ -191,7 +191,7 @@ if __name__ == '__main__':
         cardboard_type="T-24",
         color="бурый"
     )
-    print(f'Коробка {box.Type}, {box.Length}x{box.Width}x{box.Height}, {box.Color}, {box.Quantity} шт - {box.PriceSingle} руб. / {box.PriceTotal} руб.')
+    print(f'Коробка {box.Type}, {box.Length}x{box.Width}x{box.Height}, {box.Color}, {box.Quantity} шт - {box.PriceUnit} руб. / {box.PriceTotal} руб.')
     """
     если не задана форма, цвет и тип картона, то возьмутся дефолтные
     427, T-24, бурый
