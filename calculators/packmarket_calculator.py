@@ -1,32 +1,6 @@
-from typing import NamedTuple, Dict, List, Tuple
-from typing import Literal
+from typing import List, Tuple
+from .types import CardboardPriceMatrix, BoxType, ColorType, CardboardType, Box
 from math import ceil
-
-type BoxType = Literal[427] | Literal[201]
-type ColorType = Literal["бурый"] | Literal["белый"]
-type CardboardType = Literal["T-23", "T-24"]
-
-type CardboardPriceMatrix = Dict[ColorType, Dict[CardboardType, float]]
-
-class Box(NamedTuple):
-    Length: int
-    """Длина коробки в миллиметрах"""
-    Width: int
-    """Ширина коробки в миллиметрах"""
-    Height: int
-    """Высота коробки в миллиметрах"""
-    Type: Literal[427] | Literal[201]
-    """Тип коробки: 427 или 201"""
-    Color: Literal["бурый"] | Literal["белый"]
-    '''Цвет коробки: "бурый" или "белый"'''
-    Cardboard: CardboardType
-    '''Тип материала: "T-23" или "T-24"'''
-    Quantity: int
-    """Количество коробок"""
-    PriceUnit: float
-    """Цена за шт"""
-    PriceTotal: float
-    """Общая цена"""
 
 def calculate(
         length: int,
@@ -153,7 +127,7 @@ def _calculate_area(length: int, width: int, height: int, box_type: BoxType) -> 
     
     if box_type == 201:
         return ((width + height + 8)*((length + width) * 2 + 60))
-    return 43500
+    return 0
 
 def _get_base_price(box_area: int, cardboard_price: float) -> float:
     return box_area / 1000000 * cardboard_price
