@@ -1,9 +1,21 @@
-from typing import NamedTuple
+from typing import NamedTuple, Literal
 from .types import *
+import requests
+from bs4 import BeautifulSoup
+import json
 
 #TODO: Box
 #                                                                            "0427"       300      300     100       t24              bury                                420
 _REQUEST_URL_TEMPLATE: str = "https://app.ronbel.ru/korobka/client/samovyvoz/{box_type}/{length}/{width}/{height}/{cardboard_type}/{color}/print_no/options_no/price/{quantity}"
+
+class UrlParameters(NamedTuple):
+    length: int
+    width: int
+    height: int
+    box_form: Literal['0427', '0201']
+    cardboard_type: str
+    color: Literal['bury']
+    quantity: int
 
 def calculate(
         length: int,
@@ -69,12 +81,44 @@ def _check_input_parameters(
     if (color != 'бурый') & (color != 'белый'): raise ValueError('Unknown color. Must be "бурый" or "белый"')
     if (cardboard_type != 'T-24'): raise ValueError('Unknown cardboard type. Must be "T-24"')
     _check_dimmensions()
-    
-def _adjust_parameters_for_url_format():
-    pass
 
-def _send_request():
-    pass
+def _adjust_parameters_for_url_format(
+        length: int,
+        width: int,
+        height: int,
+        quantity: int,
+        box_type: BoxType = "0427",
+        cardboard_type: CardboardType = "T-24",
+        color: ColorType = "бурый"
+) -> UrlParameters:
+    def _adjust_cardboard_type(input: str):
+        return input.lower().replace("-", "")
+    u_cardboard = _adjust_cardboard_type(cardboard_type)
+    if color == 'бурый':
+        u_color = 'bury'
+    return UrlParameters(
+        length=length,
+        width=width,
+        height=height,
+        quantity=quantity,
+        box_form=box_type,
+        cardboard_type=u_cardboard,
+        color=u_color
+    )
+
+def _send_request(params: UrlParameters) -> str | None:
+    request_url = _REQUEST_URL_TEMPLATE.format(
+        box_type = params.box_form,
+        length = params.length,
+        width = params.width,
+        height = params.height,
+        cardboard_type = params.cardboard_type,
+        color = params.color,
+        quantity=params.quantity
+    )
+    r = requests.get(request_url)
+    if r.status_code == 200:
+        return r.text
 
 def _parse_response():
     pass
