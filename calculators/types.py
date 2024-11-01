@@ -36,4 +36,5 @@ class CalculationError(Exception):
         super().__init__(message)
         self.description: str = description
 
-__all__ = ['Box', 'BoxType', 'ColorType', 'CardboardType', 'ExternalError']
+__all__ = ['Box', 'BoxType', 'ColorType', 'CardboardType', 'ExternalError',
+           'CalculationError']
