@@ -27,8 +27,13 @@ class Box(NamedTuple):
     """Общая цена"""
 
 class ExternalError(Exception):
-    def __init__(self, message, code=None):
+    def __init__(self, message: str, code: int|None = None):
         super().__init__(message)
         self.code = code
+
+class CalculationError(Exception):
+    def __init__(self, message: str, description: str):
+        super().__init__(message)
+        self.description: str = description
 
 __all__ = ['Box', 'BoxType', 'ColorType', 'CardboardType', 'ExternalError']
