@@ -1,7 +1,7 @@
 from typing import NamedTuple, Literal
 from .types import *
 import requests
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup as Soup
 import re
 #                                                                            "0427"       300      300     100       t24              bury                                420
 _REQUEST_URL_TEMPLATE: str = "https://app.ronbel.ru/korobka/client/samovyvoz/{box_type}/{length}/{width}/{height}/{cardboard_type}/{color}/print_no/options_no/price/{quantity}"
@@ -124,10 +124,13 @@ def _send_request(params: UrlParameters) -> str | None:
 
 def _parse_response(response: str):
     #aka get raw data
-    pass
-    """
     if "Ошибка" in response:
-        raise ...
+        soup = Soup(response, 'html5lib')
+        error: str = soup.findAll('div', {"class" : "container"})[0].findAll('h3')[0].get_text()
+        raise CalculationError('Cant make box with these parameters', description=error)
+    
+
+    """
     soup = bs(response, 'html5lib')
     divs = soup.findAll('div', {"itemprop": "offers"})
 
