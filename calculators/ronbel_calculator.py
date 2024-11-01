@@ -60,13 +60,31 @@ def calculate(
         cardboard_type=cardboard_type,
         color=color
     )
-    _check_input_parameters(**locals())
-
-    #Подогнать входные параметры под вид для запроса
-    #Сделать запрос по урл
-    #Спарсить со страницы ответ
-    #Упаковать ответ в структуру Box
-    pass
+    _params = _adjust_parameters_for_url_format(
+        length=length,
+        width=width,
+        height=height,
+        quantity=quantity, 
+        box_type=box_type,
+        cardboard_type=cardboard_type,
+        color=color
+    )
+    _ronbel_response = _send_request(_params)
+    _raw_data = _get_raw_data_from_response(_ronbel_response)
+    _raw_data = _parse_raw_data(_raw_data)
+    _prices = _adjust_response_parameters_format(_raw_data)
+    
+    return Box(
+        Length=length,
+        Width=width,
+        Height=height,
+        Type=box_type,
+        Color=color,
+        Cardboard=cardboard_type,
+        Quantity=quantity,
+        PriceUnit=_prices.price_unit,
+        PriceTotal=_prices.price_total #TODO: уточнить формат
+    )
 
 def _check_input_parameters(
         length: int,
@@ -111,7 +129,7 @@ def _adjust_parameters_for_url_format(
         color=u_color
     )
 
-def _send_request(params: UrlParameters) -> str | None:
+def _send_request(params: UrlParameters) -> str:
     request_url = _REQUEST_URL_TEMPLATE.format(
         box_type = params.box_form,
         length = params.length,
