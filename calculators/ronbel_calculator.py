@@ -119,8 +119,10 @@ def _send_request(params: UrlParameters) -> str | None:
     r = requests.get(request_url)
     if r.status_code == 200:
         return r.text
+    else:
+        raise ExternalError("External server error. Try again")
 
-def _parse_response():
+def _parse_response(response: str):
     pass
 
 def _adjust_response_parameters_format():
