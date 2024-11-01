@@ -2,11 +2,10 @@ from typing import NamedTuple, Literal
 from .types import *
 import requests
 from bs4 import BeautifulSoup
-import json
-
-#TODO: Box
+import re
 #                                                                            "0427"       300      300     100       t24              bury                                420
 _REQUEST_URL_TEMPLATE: str = "https://app.ronbel.ru/korobka/client/samovyvoz/{box_type}/{length}/{width}/{height}/{cardboard_type}/{color}/print_no/options_no/price/{quantity}"
+_MATCHING_PATTERN = r"(\d{1,3}(?: \d{3})*,\d{2})"
 
 class UrlParameters(NamedTuple):
     length: int
@@ -56,7 +55,8 @@ def calculate(
         cardboard_type=cardboard_type,
         color=color
     )
-    #Проверить входные параметры
+    _check_input_parameters(**locals())
+
     #Подогнать входные параметры под вид для запроса
     #Сделать запрос по урл
     #Спарсить со страницы ответ
@@ -123,7 +123,15 @@ def _send_request(params: UrlParameters) -> str | None:
         raise ExternalError("External server error. Try again")
 
 def _parse_response(response: str):
+    #aka get raw data
     pass
+    """
+    if "Ошибка" in response:
+        raise ...
+    soup = bs(response, 'html5lib')
+    divs = soup.findAll('div', {"itemprop": "offers"})
+
+    """
 
 def _adjust_response_parameters_format():
     pass
