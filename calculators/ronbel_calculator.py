@@ -35,6 +35,15 @@ def calculate(
             PriceTotal: float - итоговый ценник
         )
     """
+    _check_input_parameters(
+        length=length,
+        width=width,
+        height=height,
+        quantity=quantity, 
+        box_type=box_type,
+        cardboard_type=cardboard_type,
+        color=color
+    )
     #Проверить входные параметры
     #Подогнать входные параметры под вид для запроса
     #Сделать запрос по урл
@@ -51,8 +60,16 @@ def _check_input_parameters(
         cardboard_type: CardboardType = "T-24",
         color: ColorType = "бурый"
 ) -> None:
-    pass
-
+    def _check_dimmensions():
+        if length < 0: raise ValueError('Negative length')
+        if width < 0: raise ValueError('Negative width')
+        if height < 0: raise ValueError('Negative height')
+    if quantity < 0: raise ValueError('Negative quantity')
+    if (box_type != "0427") & (box_type != "0201"): raise ValueError('Unknown box type. Must be "0201" or "0427"')
+    if (color != 'бурый') & (color != 'белый'): raise ValueError('Unknown color. Must be "бурый" or "белый"')
+    if (cardboard_type != 'T-24'): raise ValueError('Unknown cardboard type. Must be "T-24"')
+    _check_dimmensions()
+    
 def _adjust_parameters_for_url_format():
     pass
 
