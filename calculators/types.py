@@ -26,9 +26,9 @@ class Box(NamedTuple):
     PriceTotal: float
     """Общая цена"""
 
-class ServerCalculationError(Exception):
+class ExternalError(Exception):
     def __init__(self, message, code=None):
         super().__init__(message)
         self.code = code
 
-__all__ = ['Box', 'BoxType', 'ColorType', 'CardboardType']
+__all__ = ['Box', 'BoxType', 'ColorType', 'CardboardType', 'ExternalError']
