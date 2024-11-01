@@ -7,7 +7,7 @@ def calculate(
         width: int,
         height: int,
         quantity: int,
-        box_type: BoxType = 427,
+        box_type: BoxType = "0427",
         cardboard_type: CardboardType = "T-24",
         color: ColorType = "бурый"
 ) -> Box:
@@ -17,7 +17,7 @@ def calculate(
         width: int - ширина в миллиметрах
         height: int - высота в миллиметрах
         quantity: int - количество штук (минимум 100)
-        box_type: Literal[427] | Literal[201] - форма коробки (427 или 201)
+        box_type: Literal["0427"] | Literal["0201"] - форма коробки ("0427" или "0201")
         cardboard_type: Literal["T-23", "T-24"] - тип картона ("T-23" или "T-24" на английском)
         color: Literal["бурый"] | Literal["белый"] - цвет
         @returns:
@@ -25,7 +25,7 @@ def calculate(
             Length: int - длина
             Width: int - ширина
             Height: int - высота
-            Type: Literal[427,201] - тип формы (427 или 201)
+            Type: Literal["0427","0201"] - тип формы ("0427" или "0201")
             Color: Literal['бурый', 'белый'] - цвет ('бурый' или 'белый')
             Quantity: int - количество
             PriceUnit: float - цена за штуку
@@ -56,7 +56,7 @@ def _check_input_parameters(
         width: int,
         height: int,
         quantity: int,
-        box_type: BoxType = 427,
+        box_type: BoxType = "0427",
         cardboard_type: CardboardType = "T-24",
         color: ColorType = "бурый"
 ) -> None:
@@ -66,15 +66,15 @@ def _check_input_parameters(
         if height < 30: raise ValueError('Height must be more than 30mm')
         if length < width: raise ValueError('Length must be more than width')
     def _check_box_specific_dimmensions() -> None:
-        if box_type == 201:
+        if box_type == "0201":
             if length + width > 3140: raise ValueError('This size is not available')
             if height + width > 1390: raise ValueError('This size is not available')
-        if box_type == 427:
+        if box_type == "0427":
             if 2 * width + 3 * height > 1960: raise ValueError('This size is not available')
             if length + 4 * height > 1310: raise ValueError('This size is not available')
     
     if quantity < 100: raise ValueError('Quantity must be more than 100')
-    if (box_type != 427) & (box_type != 201): raise ValueError('Box type must be 427 or 201')
+    if (box_type != "0427") & (box_type != "0201"): raise ValueError('Box type must be "0427" or "0201"')
     if (color != 'бурый') & (color != 'белый'): raise ValueError('Color must be "бурый" or "белый"')
     if (cardboard_type != 'T-24'): raise ValueError('Cardboard type must be "T-24"')
     _check_dimmensions()
@@ -86,7 +86,7 @@ def _calculate_packmarket(
         width: int,
         height: int,
         quantity: int,
-        box_type: BoxType = 427,
+        box_type: BoxType = "0427",
         cardboard_type: CardboardType = "T-24",
         color: ColorType = "бурый"
     ) -> Box:
@@ -121,11 +121,11 @@ def _get_cardboard_price(cardboard_type: CardboardType, color: ColorType) -> flo
     return prices[color][cardboard_type]
 
 def _calculate_area(length: int, width: int, height: int, box_type: BoxType) -> int:
-    #Пока что будет под 0427 и 0201 короб. Дальше можно добавить по запросу
-    if box_type == 427:
+    #Пока что будет под 0"0427" и 0"0201" короб. Дальше можно добавить по запросу
+    if box_type == "0427":
         return ((length + 4 * height + 70)*(2 * width + 3 * height + 40))
     
-    if box_type == 201:
+    if box_type == "0201":
         return ((width + height + 8)*((length + width) * 2 + 60))
     return 0
 
@@ -161,14 +161,14 @@ if __name__ == '__main__':
         width=300, 
         height=1060, 
         quantity=100, 
-        box_type=201,
+        box_type="0201",
         cardboard_type="T-24",
         color="бурый"
     )
     print(f'Коробка {box.Type}, {box.Length}x{box.Width}x{box.Height}, {box.Color}, {box.Quantity} шт - {box.PriceUnit} руб. / {box.PriceTotal} руб.')
     """
     если не задана форма, цвет и тип картона, то возьмутся дефолтные
-    427, T-24, бурый
+    "0427", T-24, бурый
     """
     box=calculate(
         length=300, 
