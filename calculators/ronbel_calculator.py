@@ -1,4 +1,4 @@
-from typing import NamedTuple, Literal
+from typing import NamedTuple, Literal,  Tuple, List
 from .types import *
 import requests
 from bs4 import BeautifulSoup as Soup
@@ -15,6 +15,11 @@ class UrlParameters(NamedTuple):
     cardboard_type: str
     color: Literal['bury']
     quantity: int
+
+class Prices(NamedTuple):
+    price_unit: float
+    press_form: float
+    price_total: float
 
 def calculate(
         length: int,
@@ -122,19 +127,30 @@ def _send_request(params: UrlParameters) -> str | None:
     else:
         raise ExternalError("External server error. Try again")
 
-def _parse_response(response: str):
-    #aka get raw data
+def _get_raw_data_from_response(response: str) -> str:
+    #Никто не должен это видеть
+    soup = Soup(response, 'html5lib')
     if "Ошибка" in response:
-        soup = Soup(response, 'html5lib')
         error: str = soup.findAll('div', {"class" : "container"})[0].findAll('h3')[0].get_text()
         raise CalculationError('Cant make box with these parameters', description=error)
     
+    raw_data = soup.findAll('div', {"itemprop":"offers"})[0].findAll('p')[0].get_text()
 
-    """
-    soup = bs(response, 'html5lib')
-    divs = soup.findAll('div', {"itemprop": "offers"})
+    return raw_data
 
-    """
+def _parse_raw_data(raw_data: str) -> tuple:
+    #И это тоже
+    raw_prices: List[str] = re.findall(raw_data, _MATCHING_PATTERN)
+    formatted_prices = [price.replace(' ', '').replace(',', '.') for price in raw_prices]
+    return tuple(formatted_prices)
 
-def _adjust_response_parameters_format():
-    pass
+def _adjust_response_parameters_format(prices: tuple) -> Prices:
+    #god bless
+    price_unit =  float(prices[0])
+    press_form = float(prices[1])
+    price_total = float(prices[2])
+    return Prices(
+        price_unit=price_unit,
+        press_form=press_form,
+        price_total=price_total
+    )   
